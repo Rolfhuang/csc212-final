@@ -5,6 +5,10 @@
 #include <algorithm>
 using std::swap;
 #include <cassert>
+#include <vector>
+using std::vector;
+#include <deque>
+using std::deque;
 
 /* SDL reference: https://wiki.libsdl.org/CategoryAPI */
 
@@ -99,7 +103,7 @@ void initBlocks()
 	int u = h/5-2*ep;
 	int mw = (W-w)/2;
 	int mh = (H-h)/2;
-
+	int move = bframe.x / 4 + ep; //move on grid
 	/* setup bounding rectangle of the board: */
 	bframe.x = (W-w)/2;
 	bframe.y = (H-h)/2;
@@ -136,8 +140,66 @@ void initBlocks()
 	B[9].R.w = 2*(u+ep);
 	B[9].R.h = 2*(u+ep);
 	B[9].type = lsq;
+	
+	//configuation
+	for (size_t i = 0; i<10;i++{
+		if (i<3)
+			B[i].rotate();
+		B[i].R.x = mw + ep;
+		B[i].R.y = mh + ep;
+	}
+	B[1].R.y += 3*move + ep;
+	B[2].R.x += 3*move +ep;
+	B[2].R.y += move + ep;
+	B[3].R.x += 2*move + ep;
+	B[4].R.x += move +ep;
+	B[4].r.y += 3*move + ep;
+	B[5].R.y += 2*move +ep;
+	B[6].R.x += move + ep;
+	B[7].R.x += 3*move + ep;
+	B[7].R.y += 3*move + ep;
+	B[8].R.x += 3*move + ep;
+	B[8].R.y += 4*move + ep;
+	B[9].R.x += move + ep;
+	B[9].R.y += move +ep;
+	
+	printf ("move: %i/n", move);
 }
 
+void xCoord(block b){
+	int x = (b.R.x - bframe.x) / (bframe.w/4);
+	return x;//convert row to coordinate
+}
+void yCoord(block b){
+	int y = (b.R.y - bframe.y) / (bframe.w /4);
+	return y;//convert colum to coordinate
+}
+struct coordinate{
+	int r;//row
+	int c;//colum
+}
+void setGraph(graph& g){
+	for (size_t i=0;i<10;i++){
+		int r = xCoord(B[i]);
+		int c = yCoord(B[i]);
+		if (g[r][c] == -1){
+			g[r][c] = i;
+			if (B[i].R.w > B[i].R.h){
+				g[r][c+1] = i;}
+			else if (B[i].R.w < B[i].R.h){
+				g[r+1][c] = i;}
+			else
+				if(B[i].type == lsq){
+					g[r+1][c] = i;
+					g[r][c+1] = i;
+					g[r+1][c+1] = i;}
+		}	
+	}
+	
+}//setup the position to coordinate
+bool outLsq(const graph& g){
+	return (g[4][1] == 1 && g[4][2] ==2);//last position for lsq
+}
 void drawBlocks()
 {
 	/* rectangles */
