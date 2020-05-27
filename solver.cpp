@@ -1,6 +1,7 @@
 /* compute optimal solutions for sliding block puzzle. */
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <SDL.h>
 #include <cstdlib>   /* for atexit() */
 #include <algorithm>
 using std::swap;
@@ -9,6 +10,12 @@ using std::swap;
 using std::vector;
 #include <deque>
 using std::deque;
+#include <string>
+using std::string;
+#include <iostream>
+using std::cout;
+using std::find;
+typedef vector<vector<int>> graph;
 
 /* SDL reference: https://wiki.libsdl.org/CategoryAPI */
 
@@ -166,17 +173,18 @@ void initBlocks()
 	printf ("move: %i/n", move);
 }
 
-void xCoord(block b){
+int xCoord(block b){
 	int x = (b.R.x - bframe.x) / (bframe.w/4);
 	return x;//convert row to coordinate
 }
-void yCoord(block b){
+int yCoord(block b){
 	int y = (b.R.y - bframe.y) / (bframe.w /4);
 	return y;//convert colum to coordinate
 }
 struct coordinate{
 	int r;//row
 	int c;//colum
+	coordinate(int r, int c) : x(r), y(c) {};
 }
 void setGraph(graph& g){
 	for (size_t i=0;i<10;i++){
@@ -198,7 +206,43 @@ void setGraph(graph& g){
 	
 }//setup the position to coordinate
 bool outLsq(const graph& g){
-	return (g[4][1] == 1 && g[4][2] ==2);//last position for lsq
+	return (g[4][1] == 9 && g[4][2] ==9 )//last position for lsq
+}
+
+enum direction {up = -1, do = 1, le = -1, ri = 1, up1 = -2, do1 = -2, le1 = -2, ri1 = -2}
+vector<direction> cdir {up, do, up1, do1};
+vector<direction> cdir {le, ri, le1, ri1};//move of block
+	     
+string conGraph(const graph& g){
+	string a{};
+	for (size_t i =0; i <5; i++){
+		for (size_t j = 0; j < 4; j++){
+			if (g[i][j] == -1)
+				a += " ";
+			else
+				a += std::con_string(g[i][j]);
+		}
+	}
+}//convert the graph to string
+
+int backGraph(const graph& g){
+	if (x == ' ')
+		return (x - 33);
+	else 
+		return x - 48;
+}//convert back the string to graph
+	     
+void bfs(deque<string>& q, const graph& g, map<string, string>& m){
+	string str = conGraph;
+	graph bf = g;
+	q.push_back(str);
+	while(!q.empty()){
+		backGraph(bf, q.front());
+		q.pop_front();
+		if (outLsq(bf)){
+			break;	
+		}
+	}
 }
 void drawBlocks()
 {
@@ -326,6 +370,9 @@ int main(int argc, char *argv[])
 	atexit(close);
 	bool quit = false; /* set this to exit main loop. */
 	SDL_Event e;
+	
+	deque<string> q;
+	map<string, string> m
 	/* main loop: */
 	while(!quit) {
 		/* handle events */
