@@ -1,11 +1,20 @@
 /* compute optimal solutions for sliding block puzzle. */
+#include<SDL.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <cstdlib>   /* for atexit() */
 #include <algorithm>
 using std::swap;
 #include <cassert>
-
+#include <vector>
+std::vector
+#include <deque>
+std::deque
+#include <map>
+std::map
+#include <iostream>
+std::cout
+std::find
 /* SDL reference: https://wiki.libsdl.org/CategoryAPI */
 
 /* initial size; will be set to screen size after window creation. */
